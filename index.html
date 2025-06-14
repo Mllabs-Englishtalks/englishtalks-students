@@ -2,19 +2,6 @@
 <html>
 
 <head>
-  <!--
-    If you are serving your web app in a path other than the root, change the
-    href value below to reflect the base path you are serving from.
-
-    The path provided below has to start and end with a slash "/" in order for
-    it to work correctly.
-
-    For more details:
-    * https://developer.mozilla.org/en-US/docs/Web/HTML/Element/base
-
-    This is a placeholder for base href that will be replaced by the value of
-    the `--base-href` argument provided to `flutter build`.
-  -->
   <base href="/">
 
   <meta charset="UTF-8">
@@ -33,7 +20,27 @@
   <title>EnglishTalks</title>
   <link rel="manifest" href="manifest.json">
 
-  <style>    /* Full-Screen Loader Styling */
+  <!-- Meta tag that allows user to zoom via pinch or Ctrl + scroll -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=10.0, user-scalable=yes">
+
+  <!-- CSS: Enable zoom, scrolling, and layout behaviors -->
+  <style>
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      height: 100%;
+      overflow: auto;
+      touch-action: pan-y pinch-zoom;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    #flutter_view {
+      width: 100%;
+      min-height: 100vh;
+      height: auto;
+    }
+
     #loading-indicator {
       position: fixed;
       top: 0;
@@ -47,7 +54,6 @@
       z-index: 9999;
     }
 
-    /* Loader Container */
     .loader-container {
       width: 100px;
       height: 100px;
@@ -58,30 +64,24 @@
       position: relative;
     }
 
-    /* Loading Image */
     .loading-image {
       width: 50px;
       height: 50px;
       position: absolute;
       z-index: 2;
-      /* Keeps image above spinner */
     }
 
-    /* Red Circular Spinner */
     .spinner {
       width: 100px;
       height: 100px;
       border: 2px solid transparent;
-      /* Makes hidden parts fully transparent */
       border-top: 2px solid red;
-      /* Shortened red segment */
       border-radius: 50%;
       animation: spin 1s linear infinite;
       position: absolute;
       z-index: 1;
     }
 
-    /* Spinner Animation */
     @keyframes spin {
       0% {
         transform: rotate(0deg);
@@ -93,24 +93,13 @@
     }
   </style>
 
+  <!-- Splash Screen Styles -->
   <style id="splash-screen-style">
-    html {
-      height: 100%
-    }
-
-    body {
-      margin: 0;
-      min-height: 100%;
-      background-color: #ffffff;
-      background-size: 100% 100%;
-    }
-
     .center {
       margin: 0;
       position: absolute;
       top: 50%;
       left: 50%;
-      -ms-transform: translate(-50%, -50%);
       transform: translate(-50%, -50%);
     }
 
@@ -138,7 +127,6 @@
       position: absolute;
       bottom: 0;
       left: 50%;
-      -ms-transform: translate(-50%, 0);
       transform: translate(-50%, 0);
     }
 
@@ -154,6 +142,7 @@
       right: 0;
     }
   </style>
+
   <script id="splash-screen-script">
     function removeSplashFromWeb() {
       document.getElementById("splash")?.remove();
@@ -161,10 +150,10 @@
       document.body.style.background = "transparent";
     }
   </script>
-  <meta content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
 </head>
 
 <body>
+  <!-- Splash image -->
   <picture id="splash">
     <source
       srcset="splash/img/light-1x.png 1x, splash/img/light-2x.png 2x, splash/img/light-3x.png 3x, splash/img/light-4x.png 4x"
@@ -174,8 +163,8 @@
       media="(prefers-color-scheme: dark)">
     <img class="center" aria-hidden="true" src="splash/img/light-1x.png" alt="">
   </picture>
-  <!-- Loading Indicator -->
-  <!-- Loading Indicator -->
+
+  <!-- Custom Loading Spinner -->
   <div id="loading-indicator">
     <div class="loader-container">
       <img src="favicon.png" class="loading-image" alt="">
@@ -183,16 +172,28 @@
     </div>
   </div>
 
+  <!-- Remove loader when Flutter is ready -->
   <script>
-    // Remove the loader from the DOM once Flutter is fully loaded
     window.addEventListener("flutter-first-frame", function () {
-      let loader = document.getElementById("loading-indicator");
-      if (loader) {
-        loader.remove(); // Completely removes the element from the DOM
+      document.getElementById("loading-indicator")?.remove();
+    });
+  </script>
+
+  <!-- JS to allow Ctrl + Scroll Zoom -->
+  <script>
+    window.addEventListener('load', function () {
+      const flutterCanvas = document.querySelector('#flutter_view') || document.querySelector('flt-glass-pane');
+      if (flutterCanvas) {
+        flutterCanvas.addEventListener('wheel', function (e) {
+          if (e.ctrlKey) {
+            e.stopPropagation(); // Let browser zoom, not Flutter
+          }
+        }, { passive: false });
       }
     });
   </script>
-  <script src="flutter_bootstrap.js" async=""></script>
+
+  <script src="flutter_bootstrap.js" async></script>
 </body>
 
 </html>
